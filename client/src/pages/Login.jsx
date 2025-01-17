@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate } from 'react-router';
-import { AppContext } from '../context/AppContext';
+import  AppContext from '../context/AppContext';
 import { registerUser, loginUser } from "../services/user.services.js";
 import {toast} from "react-toastify";
 

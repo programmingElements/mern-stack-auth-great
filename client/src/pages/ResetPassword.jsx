@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router';
+import {toast} from "react-toastify";
+import { sendResetOtp, resetPassword } from '../services/user.services';
 
 const ResetPassword = () => {
   const inputRefs = React.useRef([]);
@@ -34,10 +36,39 @@ const ResetPassword = () => {
   const onSubmitEmail = async (e) => {
     try {
         e.preventDefault();
-        
+        const {data} = await sendResetOtp({email});
+        if (data.success) {
+          toast.success(data.message);
+          setIsEmailSent(true);
+        } else {
+          toast.error(data.message);
+        }
     } catch (error) {
         toast.error(error.message);
         throw new Error(error.message);
+    }
+  }
+
+  const onSubmitOtp = (e) => {
+       e.preventDefault();
+      const otpArray = inputRefs.current.map((e) => e.value);
+      setOtp(otpArray.join(''));
+      setIsOtpSubmitted(true);
+  }
+
+  const onSubmitNewPassword = async (e) => {
+    try {
+      e.preventDefault();
+      const {data} = await resetPassword({email, otp, newPassword});
+      if (data.success) {
+        toast.success(data.message);
+        navigate('/login');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      throw new Error(error.message);
     }
   }
 
@@ -49,12 +80,12 @@ const ResetPassword = () => {
           
           {
             !isEmailSent && (
-                <form className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
+                <form onSubmit={onSubmitEmail} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
           <h1 className='text-white text-2xl font-semibold text-center mb-4'>Reset Password</h1>
           <p className='text-center text-indigo-300 mb-6'>Enter your registered email address.</p>
           <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>
             <span className='bi bi-envelope w-3 text-white'></span>
-            <input type="email" placeholder='Email id' className='bg-transparent outline-none text-white' value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input type="email" placeholder='Email id' className='bg-transparent outline-none border-none text-white' value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <button className='w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium mt-3'>Submit</button>
           </form>
@@ -63,7 +94,7 @@ const ResetPassword = () => {
 
           {/* otp input form */}
           { !isOtpSubmitted && isEmailSent && (
-            <form className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'> 
+            <form onSubmit={onSubmitOtp} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'> 
             <h1 className='text-white text-2xl font-semibold text-center mb-4'>Reset password OTP</h1>
             <p className='text-center text-indigo-300 mb-6'>Enter the 6-digit code sent to your email id.</p>
             <div className="flex justify-between mb-8" onPaste={handlePaste}>
@@ -91,7 +122,7 @@ const ResetPassword = () => {
 
               {/* enter new password */}
               { isOtpSubmitted && isEmailSent && (
-                <form className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
+                <form onSubmit={onSubmitNewPassword} className='bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm'>
                 <h1 className='text-white text-2xl font-semibold text-center mb-4'>New Password</h1>
                 <p className='text-center text-indigo-300 mb-6'>Enter the new password below</p>
                 <div className='mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]'>

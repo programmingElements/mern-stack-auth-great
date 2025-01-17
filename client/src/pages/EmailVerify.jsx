@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { toast } from 'react-toastify';
-import { AppContext } from '../context/AppContext';
+import AppContext from '../context/AppContext';
 import { useNavigate } from 'react-router';
 import { verifyAccount } from '../services/user.services';
 
