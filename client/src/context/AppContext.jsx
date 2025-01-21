@@ -16,7 +16,9 @@ export const AppProvider = (props) => {
                 getUserDetails();
             }
         } catch (error) {
+            // console.log(error);
             toast.error(error.message);
+            throw new Error(error.message);
         }
       }
 
@@ -35,7 +37,7 @@ export const AppProvider = (props) => {
     }
 
     useEffect(() => {
-        getAuthState();
+            getAuthState();
     }, [])
     
     const value = {
